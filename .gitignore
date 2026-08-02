@@ -1,1 +1,54 @@
+# Python cache files 
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments 
+venv/
+env/
+.venv/
+ENV/
+
+# IDE settings
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Pygame specific 
+*.pygame_data  
+
+# Media files 
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp3
+*.wav
+*.ogg
+!demo.gif 
+
+# Executable files 
+*.exe
+*.spec
+dist/
+build/
+
+# Logs and temporary files 
+*.log
+*.tmp
+*.swp
+*.swo
+
+# pytest 
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
