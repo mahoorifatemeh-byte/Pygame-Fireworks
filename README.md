@@ -12,6 +12,9 @@
 
 A small pygame project that simulates a fireworks show — rockets, explosions, particle trails, and a starry background. There's no game logic or goal, it's just meant to look nice.
 
+![Explosion display](demo.gif)
+
+
 ## What it does
 
 - Rockets launch from random positions at the bottom of the screen and rise with gravity acting on them
