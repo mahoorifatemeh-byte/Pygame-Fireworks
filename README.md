@@ -37,7 +37,7 @@ pip install pygame
 and then:
 
 ```bash
-python firework.py
+python FireWorks.py
 ```
 
 ## Controls
