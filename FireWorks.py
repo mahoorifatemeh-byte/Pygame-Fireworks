@@ -2,16 +2,16 @@ import pygame
 import random
 import math
 
-# --- ثابت‌ها ---
-WIDTH, HEIGHT = 1000, 700  # ابعاد بزرگتر
+# --- Constants ---
+WIDTH, HEIGHT = 1000, 700  
 FPS = 60
-GRAVITY = 0.15  # نیروی گرانش (کم برای ماندگاری بیشتر)
-AIR_RESISTANCE = 0.985 # مقاومت هوا
+GRAVITY = 0.15  # Gravity force (low for longer hang time)
+AIR_RESISTANCE = 0.985 
 
-# --- رنگ‌ها ---
+# --- Colors ---
 BLACK = (0, 0, 0)
 
-# --- کلاس ستاره برای پس‌زمینه (بدون تغییر) ---
+# --- Star class for background ---
 class Star:
     def __init__(self):
         self.x = random.randint(0, WIDTH)
@@ -32,7 +32,7 @@ class Star:
     def draw(self, surface):
         pygame.draw.circle(surface, (self.brightness, self.brightness, self.brightness), (self.x, self.y), self.size)
 
-# --- کلاس ذره (Particle) (با دنباله) ---
+# --- Particle class (with trail) ---
 class Particle:
     def __init__(self, x, y, color, type='spark', parent_color=None):
         self.x = x
@@ -42,7 +42,7 @@ class Particle:
         self.type = type 
         self.parent_color = parent_color if parent_color else color
 
-        # --- تعریف ویژگی‌های اولیه بر اساس نوع ذره ---
+        # --- Set initial properties based on particle type ---
         if self.type == 'trail':
             self.vx = random.uniform(-0.5, 0.5)
             self.vy = random.uniform(1, 2)
@@ -56,7 +56,7 @@ class Particle:
             self.vy = speed * math.sin(angle)
             self.radius = random.uniform(1.5, 3.5)
             self.lifetime = random.randint(100, 180) 
-            self.trail_history = [] # !!! اضافه شده برای دنباله !!!
+            self.trail_history = [] 
 
         elif self.type == 'pop':
             angle = random.uniform(0, 2 * math.pi)
@@ -69,7 +69,7 @@ class Particle:
         self.current_lifetime = self.lifetime
 
     def update(self):
-        # اعمال فیزیک
+        # Apply physics
         self.vy += GRAVITY
         self.vx *= AIR_RESISTANCE
         self.vy *= AIR_RESISTANCE
@@ -78,7 +78,7 @@ class Particle:
         
         self.current_lifetime -= 1
         
-        # تغییر رنگ (فقط برای ذرات اصلی spark)
+       # Color change (only for main spark particles)
         if self.type == 'spark':
             ratio = self.current_lifetime / self.lifetime
             r, g, b = self.initial_color
@@ -90,11 +90,11 @@ class Particle:
             )
             self.color = tuple(max(0, min(255, c)) for c in self.color)
             
-            # !!! به‌روزرسانی تاریخچه دنباله !!!
+            # Update trail history
             self.trail_history.append((self.x, self.y))
-            self.trail_history = self.trail_history[-5:] # نگه داشتن 5 موقعیت آخر
+            self.trail_history = self.trail_history[-5:]  
 
-        # اگر ذره دنباله باشد، شعاعش را کم می‌کنیم
+        
         if self.type == 'trail':
              self.radius = max(0, self.radius - 0.05)
 
@@ -104,26 +104,26 @@ class Particle:
             alpha = int(255 * (self.current_lifetime / self.lifetime))
             radius = int(self.radius) if self.radius > 0 else 1
             
-            # !!! رسم دنباله جزیی برای ذرات اصلی (Spark) !!!
+            # Draw subtle trail for spark particles
             if self.type == 'spark':
                 for i, pos in enumerate(self.trail_history):
-                    # شفافیت کمتر برای ذرات قدیمی‌تر در دنباله
+                    # Lower opacity for older trail points
                     trail_alpha = int(alpha * (i / len(self.trail_history)) * 0.5) 
                     trail_radius = max(1, radius - 1)
                     trail_surface = pygame.Surface((trail_radius * 2, trail_radius * 2), pygame.SRCALPHA)
-                    # رنگ دنباله کمی روشن‌تر
+                    # Slightly brighter trail color
                     pygame.draw.circle(trail_surface, self.initial_color, (trail_radius, trail_radius), trail_radius)
                     trail_surface.set_alpha(trail_alpha)
                     surface.blit(trail_surface, (int(pos[0] - trail_radius), int(pos[1] - trail_radius)))
 
-            # --- رسم خود ذره اصلی ---
+            # --- Draw the main particle ---
             particle_surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
             pygame.draw.circle(particle_surface, self.color, (radius, radius), radius)
             particle_surface.set_alpha(alpha)
             
             surface.blit(particle_surface, (int(self.x - radius), int(self.y - radius)))
 
-# --- کلاس موشک (Rocket) (بدون تغییر) ---
+# --- Rocket class ---
 class Rocket:
     def __init__(self):
         self.x = random.randint(WIDTH // 4, 3 * WIDTH // 4)
@@ -241,7 +241,7 @@ class Rocket:
                 p.draw(surface)
             pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), 4)
 
-# --- تابع اصلی ---
+# --- Main function ---
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -254,14 +254,12 @@ def main():
     
     running = True
     while running:
-        # --- ورودی‌ها ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 rockets.append(Rocket())
 
-        # --- بروزرسانی ---
         if random.random() < 0.015: 
              rockets.append(Rocket())
              
@@ -294,10 +292,9 @@ def main():
         particles = active_particles
         particles.extend(new_glitter_particles)
         
-        # --- رندرینگ (رسم) ---
-        
-        # !!! استفاده از سطح محوکننده برای ایجاد دنباله بصری !!!
-        fade_color = (0, 0, 0, 20) # رنگ سیاه با شفافیت کم
+        # --- Rendering ---
+    
+        fade_color = (0, 0, 0, 20) 
         fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         fade_surface.fill(fade_color)
         screen.blit(fade_surface, (0, 0))
