@@ -2,7 +2,7 @@
 
 **Course**: Computer Graphics  
 **University**: Islamic Azad University Central Tehran Branch  
-**Instructor**: Dr.Ghaderian  
+**Instructor**: Dr. Ali Ghaderian 
 **Semester**: Fall 2025  
 **Student**: Fatemeh Mahoori
 
